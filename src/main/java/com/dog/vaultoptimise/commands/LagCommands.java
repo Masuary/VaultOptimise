@@ -139,7 +139,6 @@ public class LagCommands {
         source.sendSuccess(otherAiOffText, false);
         source.sendSuccess(spawnerText, false);
 
-        System.out.println(mobs);
     }
 
 

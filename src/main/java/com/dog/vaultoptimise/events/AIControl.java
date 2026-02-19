@@ -1,21 +1,12 @@
 package com.dog.vaultoptimise.events;
 
-import com.dog.vaultoptimise.VaultOptimise;
 import com.dog.vaultoptimise.config.ServerConfig;
-import com.google.common.collect.ImmutableMultimap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ambient.Bat;
-import net.minecraft.world.entity.animal.AbstractGolem;
-import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -24,9 +15,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.registries.RegistryObject;
-
-import java.util.UUID;
 
 public class AIControl {
 
@@ -77,7 +65,8 @@ public class AIControl {
             return;
         }
 
-        if (!isVault && mob.getY() < 40 && !isPlayerNearby(mob)) {
+        double undergroundCullY = ServerConfig.CONFIG_VALUES.UndergroundCullYLevel.get();
+        if (!isVault && undergroundCullY > 0 && mob.getY() < undergroundCullY && !isPlayerNearby(mob)) {
             event.setCanceled(true);
             return;
         }
@@ -181,48 +170,6 @@ public class AIControl {
         mob.xxa = 0;
         mob.zza = 0;
         mob.yHeadRot = mob.getYRot();
-    }
-
-    //
-
-    private static boolean isVanillaPassiveMob(Entity entity) {
-        // Check if the entity is from the minecraft namespace
-        if (!entity.getType().getRegistryName().getNamespace().equals("minecraft")) {
-            return false;
-        }
-
-        // Check for passive mob types
-        return entity instanceof Animal ||
-                entity instanceof Bat ||
-                entity instanceof AbstractGolem ||
-                entity instanceof Squid ||
-                entity instanceof GlowSquid;
-    }
-
-    /**
-     * Event handler for entity spawning in the world
-     */
-    @SubscribeEvent(priority = EventPriority.NORMAL)
-    public static void onEntitySpawn(EntityJoinWorldEvent event) {
-        Entity entity = event.getEntity();
-
-        // Check if we're in a vault dimension
-        boolean isVaultDimension = event.getWorld().dimension().location().getPath().contains("vault");
-
-        // Only proceed if we're in a vault dimension and it's a passive mob from Minecraft
-        if (isVaultDimension && isVanillaPassiveMob(entity)) {
-            // Log the detected passive mob
-            VaultOptimise.LOGGER.warn("Detected vanilla passive mob in vault dimension: {} at coordinates [{}, {}, {}]",
-                    entity.getType().getRegistryName(),
-                    entity.getX(), entity.getY(), entity.getZ());
-
-            // You can add additional information if needed
-            if (entity instanceof LivingEntity living) {
-                VaultOptimise.LOGGER.info("  Health: {}, Motion: [{}, {}, {}]",
-                        living.getHealth(),
-                        living.getDeltaMovement().x, living.getDeltaMovement().y, living.getDeltaMovement().z);
-            }
-        }
     }
 
 }

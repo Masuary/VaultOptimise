@@ -29,6 +29,7 @@ public class ServerConfig {
         public final ForgeConfigSpec.DoubleValue ActivationRadius;
         public final ForgeConfigSpec.DoubleValue ActivationHeight;
         public final ForgeConfigSpec.DoubleValue VaultActivationRadius;
+        public final ForgeConfigSpec.DoubleValue UndergroundCullYLevel;
         public final ForgeConfigSpec.ConfigValue<List<String>> ExemptUsernames;
         public final ForgeConfigSpec.ConfigValue<String> webhookURL;
         public final ForgeConfigSpec.ConfigValue<Boolean> pingOnCrash;
@@ -60,6 +61,9 @@ public class ServerConfig {
 
             VaultActivationRadius = builder.comment("Activation radius for mobs in the vault.")
                     .defineInRange("VaultActivationRadius", 96.0, 48.0, 500.0);
+
+            UndergroundCullYLevel = builder.comment("Mobs spawning below this Y level without a nearby player will be cancelled. Set to 0 to disable.")
+                    .defineInRange("UndergroundCullYLevel", 40.0, 0.0, 320.0);
 
             extremeMode = builder.comment(" This will DRASTICALLY improve your tps, at the cost of only allowing a wave of mobs to spawn at night time. This does not affect world generation mobs, or mob spawners.")
                             .define("extremeMode", false);
